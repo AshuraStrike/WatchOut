@@ -3,6 +3,8 @@ import './App.css';
 import * as tmPose from '@teachablemachine/pose';
 
 function App() {
+  const audioTune = new Audio('sonido.mp3');
+
   let [model, setModel] = useState<tmPose.CustomPoseNet>();
   let [webcam, setWebcam] = useState<tmPose.Webcam>();
   var [predictions, setPredictions] = useState<{className: string; probability: number;}[]>();
@@ -72,6 +74,7 @@ function App() {
   }*/
 
   useEffect(() => {
+    audioTune.load();
     loadModel();
   }, []);
 
@@ -84,14 +87,14 @@ function App() {
     if(predictions) {
       if(topPrediction!==0 && timeoutId==null){
         const tid = setTimeout(()=>{
-          //->>Avisos
-          console.log('Aquí van los ruiditos >>>RODA')
+          playSound();
           setMsgThreshold(msgThreshold-1);
         },3000);
         setTimeoutId(tid);
       }else if(topPrediction === 0 && timeoutId){
         clearTimeout(timeoutId);
         setTimeoutId(null);
+        stopSound();
       }
     }
   }, [topPrediction]);
@@ -103,6 +106,16 @@ function App() {
       setMsgThreshold(3);
     }
   }, [msgThreshold]);
+
+  const playSound = () => {
+    audioTune.loop=true;
+    audioTune.play();
+  };
+
+  const stopSound = () => {
+    audioTune.pause();
+    audioTune.currentTime = 0;
+  };
 
   return (
     <div className="App" id="App">
