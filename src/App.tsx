@@ -3,7 +3,7 @@ import './App.css';
 import * as tmPose from '@teachablemachine/pose';
 
 function App() {
-  const audioTune = new Audio('sonido.mp3');
+  const [audioTune, setAudioTune] = useState<HTMLAudioElement>(new Audio('sonido.mp3'));
 
   let [model, setModel] = useState<tmPose.CustomPoseNet>();
   let [webcam, setWebcam] = useState<tmPose.Webcam>();
@@ -11,6 +11,13 @@ function App() {
   let [topPrediction, setTopPrediction] = useState<number>(0);
   const [timeoutId, setTimeoutId] = useState<ReturnType<typeof setTimeout>|null>(null);
   const [msgThreshold, setMsgThreshold] = useState<number>(3);
+
+  const state = {
+    text: {
+      recipient: '3338433079',
+      textmessage: 'Tu amigo se está quedando dormido, llámalo',
+    }
+  };
 
   const loadModel = async () => {
     const modelURL = 'https://storage.googleapis.com/tm-model/Ee38yDGdY/model.json';
@@ -95,14 +102,14 @@ function App() {
         clearTimeout(timeoutId);
         setTimeoutId(null);
         stopSound();
+        console.log('centerP');
       }
     }
   }, [topPrediction]);
 
   useEffect(() => {
     if(msgThreshold===0){
-      //->>Codigo de mensajes
-      console.log('Aqui van los guasá >>>Rafiki');
+      sendText();
       setMsgThreshold(3);
     }
   }, [msgThreshold]);
@@ -115,6 +122,14 @@ function App() {
   const stopSound = () => {
     audioTune.pause();
     audioTune.currentTime = 0;
+    console.log('stopSound');
+  };
+
+  const sendText = () => {
+    const { text } = state;
+    //pass text message GET variables via query string
+    fetch(`http://127.0.0.1:4000/send-text?recipient=${text.recipient}&textmessage=${text.textmessage}`)
+    .catch(err => console.error(err))
   };
 
   return (
