@@ -11,6 +11,9 @@ function App() {
   let [topPrediction, setTopPrediction] = useState<number>(0);
   const [timeoutId, setTimeoutId] = useState<ReturnType<typeof setTimeout>|null>(null);
   const [msgThreshold, setMsgThreshold] = useState<number>(3);
+  
+  const [visualAlertId, setVisualAlertId] = useState<ReturnType<typeof setTimeout>|null>(null);
+  const [backgroundColor, setBackgroundColor] = useState<string>('#282c34');
 
   const state = {
     text: {
@@ -96,20 +99,36 @@ function App() {
         const tid = setTimeout(()=>{
           playSound();
           setMsgThreshold(msgThreshold-1);
+          changeBackgroundColorLoop(backgroundColor);
         },3000);
         setTimeoutId(tid);
       }else if(topPrediction === 0 && timeoutId){
         clearTimeout(timeoutId);
         setTimeoutId(null);
         stopSound();
-        console.log('centerP');
+        if(visualAlertId)clearTimeout(visualAlertId);
+        setBackgroundColor('#282c34');
       }
     }
   }, [topPrediction]);
 
+  const changeBackgroundColorLoop = (bgColor: string) => {
+    const tid = setTimeout(()=>{
+      let c;
+      if(bgColor=='red'){
+        c='#282c34';
+      }else{
+        c='red';
+      }
+      setBackgroundColor(c);
+      changeBackgroundColorLoop(c);
+    },200);
+    setVisualAlertId(tid);
+  }
+
   useEffect(() => {
     if(msgThreshold===0){
-      sendText();
+      //TODO:<Borra esto!> sendText();
       setMsgThreshold(3);
     }
   }, [msgThreshold]);
@@ -134,11 +153,14 @@ function App() {
 
   return (
     <div className="App" id="App">
-      <div className="App-header">
-        <a>Wea chida paquete titules 100/10</a>
+      <div className="App-header" style={{backgroundColor: backgroundColor}}>
+        <a>WatchOut</a>
         <div id="Camera"></div>
         <div className="Results-div" id="Results">
           <a>Top prediction: {predictions? predictions[topPrediction].className.toUpperCase():null}</a>
+          <div className='progress-bar'>
+            {predictions?<div className='filler' style={{width: `${predictions[0].probability*100}%`}}></div>:null}
+          </div>
           <a>Centro: {predictions? predictions[0].probability.toFixed(6):null}</a>
           <a>Izquierda: {predictions? predictions[1].probability.toFixed(6):null}</a>
           <a>Derecha: {predictions? predictions[2].probability.toFixed(6):null}</a>
