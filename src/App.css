@@ -27,6 +27,7 @@
 .Results-div {
   display: flex;
   flex-direction: column;
+  width: 80vw;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
@@ -40,7 +41,7 @@
 .progress-bar {
   position: relative;
   height: 2vh;
-  width: 80vw;
+  width: 80%;
   border-radius: 8px;
   border: 2px;
   background-color: #909397;

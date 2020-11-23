@@ -128,7 +128,7 @@ function App() {
 
   useEffect(() => {
     if(msgThreshold===0){
-      //TODO:<Borra esto!> sendText();
+      sendText();
       setMsgThreshold(3);
     }
   }, [msgThreshold]);
