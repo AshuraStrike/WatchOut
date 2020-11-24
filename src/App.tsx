@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import * as tmPose from '@teachablemachine/pose';
+import w1 from './w1.png';
+import w2 from './w2.png';
 
 function App() {
   const [audioTune, setAudioTune] = useState<HTMLAudioElement>(new Audio('sonido.mp3'));
@@ -11,7 +13,8 @@ function App() {
   let [topPrediction, setTopPrediction] = useState<number>(0);
   const [timeoutId, setTimeoutId] = useState<ReturnType<typeof setTimeout>|null>(null);
   const [msgThreshold, setMsgThreshold] = useState<number>(3);
-  
+  const [logoVersion, setLogoVersion] = useState<boolean>(true);
+
   const [visualAlertId, setVisualAlertId] = useState<ReturnType<typeof setTimeout>|null>(null);
   const [backgroundColor, setBackgroundColor] = useState<string>('#282c34');
 
@@ -30,7 +33,7 @@ function App() {
 
     const wc = new tmPose.Webcam(200,200, true);
     await wc.setup();
-    //wc.canvas.className = 'App-logo';
+    wc.canvas.className = 'webcam';
     setWebcam(wc);
     document.getElementById('Camera')?.appendChild(wc.canvas);
 
@@ -108,6 +111,7 @@ function App() {
         stopSound();
         if(visualAlertId)clearTimeout(visualAlertId);
         setBackgroundColor('#282c34');
+        setLogoVersion(true);
       }
     }
   }, [topPrediction]);
@@ -117,8 +121,10 @@ function App() {
       let c;
       if(bgColor=='red'){
         c='#282c34';
+        setLogoVersion(true);
       }else{
         c='red';
+        setLogoVersion(false);
       }
       setBackgroundColor(c);
       changeBackgroundColorLoop(c);
@@ -154,17 +160,17 @@ function App() {
   return (
     <div className="App" id="App">
       <div className="App-header" style={{backgroundColor: backgroundColor}}>
-        <a>WatchOut</a>
+        <img src={logoVersion?w1:w2} className="App-logo1"/>
         <div id="Camera"></div>
         <div className="Results-div" id="Results">
-          <a>Top prediction: {predictions? predictions[topPrediction].className.toUpperCase():null}</a>
+          <a>Focus-meter: {predictions? /*predictions[topPrediction].className.toUpperCase()*/null:null}</a>
           <div className='progress-bar'>
             {predictions?<div className='filler' style={{width: `${predictions[0].probability*100}%`}}></div>:null}
           </div>
-          <a>Centro: {predictions? predictions[0].probability.toFixed(6):null}</a>
+          {/*<a>Centro: {predictions? predictions[0].probability.toFixed(6):null}</a>
           <a>Izquierda: {predictions? predictions[1].probability.toFixed(6):null}</a>
           <a>Derecha: {predictions? predictions[2].probability.toFixed(6):null}</a>
-          <a>Abajo: {predictions? predictions[3].probability.toFixed(6):null}</a>
+          <a>Abajo: {predictions? predictions[3].probability.toFixed(6):null}</a>*/}
         </div>
       </div>
     </div>

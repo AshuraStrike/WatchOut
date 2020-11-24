@@ -7,6 +7,10 @@
   pointer-events: none;
 }
 
+.App-logo1 {
+  width: 60vw;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
@@ -24,6 +28,10 @@
   color: white;
 }
 
+.App-title {
+  font-size: 4vh;
+}
+
 .Results-div {
   display: flex;
   flex-direction: column;
@@ -36,6 +44,11 @@
 
 .App-link {
   color: #61dafb;
+}
+
+.webcam {
+  width:  30vw;
+  height: 30vw;
 }
 
 .progress-bar {
