@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import * as tmPose from '@teachablemachine/pose';
+import Cookies from 'universal-cookie';
 import w1 from './w1.png';
 import w2 from './w2.png';
+import { isGetAccessor, setTextRange } from 'typescript';
 
 function App() {
   const [audioTune, setAudioTune] = useState<HTMLAudioElement>(new Audio('sonido.mp3'));
@@ -18,12 +20,11 @@ function App() {
   const [visualAlertId, setVisualAlertId] = useState<ReturnType<typeof setTimeout>|null>(null);
   const [backgroundColor, setBackgroundColor] = useState<string>('#282c34');
 
-  const state = {
-    text: {
-      recipient: '3338433079',
-      textmessage: 'Tu amigo se está quedando dormido, llámalo',
-    }
-  };
+  const [persistentData, setPersistentData] = useState<Cookies>(new Cookies());
+
+  const [inputText, setInputText] = useState<string>();
+  const [inputNameText, setInputNameText] = useState<string>();
+  const [showInputs, setShowInputs] = useState<boolean>(true);
 
   const loadModel = async () => {
     const modelURL = 'https://storage.googleapis.com/tm-model/Ee38yDGdY/model.json';
@@ -36,6 +37,15 @@ function App() {
     wc.canvas.className = 'webcam';
     setWebcam(wc);
     document.getElementById('Camera')?.appendChild(wc.canvas);
+
+    const phone = persistentData.get('cellNumber');
+    if(phone !== undefined){
+      setInputText(phone);
+    }
+    const name = persistentData.get('myName');
+    if(name !== undefined){
+      setInputNameText(name);
+    }
 
     /*const canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
     const ctx = canvas.getContext('2D');*/
@@ -151,11 +161,37 @@ function App() {
   };
 
   const sendText = () => {
-    const { text } = state;
     //pass text message GET variables via query string
-    fetch(`http://127.0.0.1:4000/send-text?recipient=${text.recipient}&textmessage=${text.textmessage}`)
+    console.log(persistentData.get('cellNumber'));
+    const number = persistentData.get('cellNumber');
+    const myName = persistentData.get('myName');
+
+    const mensaje: string = `Tu amigo ${myName} se está quedando dormido, llámalo`;
+
+    fetch(`http://127.0.0.1:4000/send-text?recipient=${number}&textmessage=${mensaje}`)
     .catch(err => console.error(err))
   };
+
+  const onClickHandler = () => {
+    if(showInputs){
+      persistentData.set('cellNumber',inputText,{path:'/'});
+      persistentData.set('myName',inputNameText,{path:'/'});
+    }
+    setShowInputs(!showInputs);
+  }
+
+  const inputHandler = (event: any) => {
+    const validNumber = parseInt(event.target.value).toString();
+    if(validNumber!=='NaN'){
+      setInputText(validNumber.toString());
+    }else{
+      setInputText('');
+    }
+  }
+
+  const inputNameHandler = (e: any) => {
+    setInputNameText(e.target.value);
+  }
 
   return (
     <div className="App" id="App">
@@ -167,6 +203,11 @@ function App() {
           <div className='progress-bar'>
             {predictions?<div className='filler' style={{width: `${predictions[0].probability*100}%`}}></div>:null}
           </div>
+          {showInputs?<input className='inputText' type='text' id='phoneNumber' onChange={inputHandler} value={inputText} maxLength={10} placeholder='Contact #'/>:null}
+          {showInputs?<input className='inputText2' type='text' id='contactName' onChange={inputNameHandler} value={inputNameText} maxLength={15} placeholder='Your name'/>:null}
+          <button className='submitButton' type='button' onClick={onClickHandler} >
+            {showInputs?'Save Phone':'Set Phone'}
+          </button>
           {/*<a>Centro: {predictions? predictions[0].probability.toFixed(6):null}</a>
           <a>Izquierda: {predictions? predictions[1].probability.toFixed(6):null}</a>
           <a>Derecha: {predictions? predictions[2].probability.toFixed(6):null}</a>

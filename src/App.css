@@ -53,7 +53,7 @@
 
 .progress-bar {
   position: relative;
-  height: 2vh;
+  height: 3vh;
   width: 80%;
   border-radius: 8px;
   border: 2px;
@@ -67,6 +67,35 @@
   transition: width .2s ease-in;
 }
 
+.inputText {
+  width: 20vw;
+  margin-top: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: 'Nerko One';
+  font-size: 4vw;
+}
+
+.inputText2 {
+  width: 27vw;
+  margin-top: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: 'Nerko One';
+  font-size: 4vw;
+}
+
+.submitButton {
+  margin: 8px;
+  border-radius: 8px;
+  padding: 6px;
+  font-size: 3vw;
+  font-weight: bold;
+  font-family: 'Nerko One';
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -74,4 +103,8 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+a {
+  font-size: 3vw;
 }
